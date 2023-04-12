@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    restart: unless-stopped
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    command: redpanda start --smp 1 --overprovisioned --kafka-addr PLAINTEXT://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092 --advertise-kafka-addr PLAINTEXT://redpanda:9093,OUTSIDE://localhost:9092 --pandaproxy-addr 0.0.0.0:8082 --advertise-pandaproxy-addr localhost:8082
+
+  redpanda_console:
+    image: docker.redpanda.com/redpandadata/console:latest
+    restart: unless-stopped
+    ports:
+      - "8999:8080"
+    environment:
+      - KAFKA_BROKERS=redpanda:9094
+    depends_on:
+      - redpanda
+
+volumes:
+  redpanda-data:

@@ -1,18 +1,17 @@
 version: '3.9'
 
 services:
-  postgresql:
-    image: postgres:alpine
-    restart: always
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
-      PGDATA: /var/lib/postgresql/postgres/data/pgdata
     ports:
       - "5432:5432"
     volumes:
-      - postgres-volume:/var/lib/postgresql/postgres/data/pgdata
+      - postgres-volume:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -35,7 +34,7 @@ services:
       - ./servers.json:/pgadmin4/servers.json
       - ./pgpass:/pgadmin4/pgpass
     depends_on:
-      - postgresql
+      - postgres
 
   #  http://localhost:1081/?pgsql=postgresql&username=postgres&db=postgres&ns=public
   adminer:
